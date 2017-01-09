@@ -32,10 +32,34 @@ namespace AsyncAwait
         private void Download(object sender, RoutedEventArgs e)
         {
             // synchronous download
-            client.DownloadData(pdf1);
-            client.DownloadData(pdf2);
-            client.DownloadData(pdf3);
-            MessageBox.Show("Finished");
+            //client.DownloadData(pdf1);
+            //client.DownloadData(pdf2);
+            //client.DownloadData(pdf3);
+            //MessageBox.Show("Finished");
+
+            // asynchronous download using events
+            client.DownloadDataCompleted += OnCompleted;
+            client.DownloadDataAsync(new Uri(pdf1));
+        }
+
+        private int state = 0;
+
+        private void OnCompleted(object sender, DownloadDataCompletedEventArgs e)
+        {
+            switch (state)
+            {
+                case 0:
+                    client.DownloadDataAsync(new Uri(pdf2));
+                    state++;
+                    break;
+                case 1:
+                    client.DownloadDataAsync(new Uri(pdf3));
+                    state++;
+                    break;
+                case 2:
+                    MessageBox.Show("Finished");
+                    break;
+            }
         }
 
         public MainWindow()
