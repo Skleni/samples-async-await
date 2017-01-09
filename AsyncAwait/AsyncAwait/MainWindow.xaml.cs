@@ -38,8 +38,14 @@ namespace AsyncAwait
             //MessageBox.Show("Finished");
 
             // asynchronous download using events
-            client.DownloadDataCompleted += OnCompleted;
-            client.DownloadDataAsync(new Uri(pdf1));
+            //client.DownloadDataCompleted += OnCompleted;
+            //client.DownloadDataAsync(new Uri(pdf1));
+
+            // tasks
+            var task = client.DownloadDataTaskAsync(pdf1)
+                             .ContinueWith(t1 => client.DownloadDataTaskAsync(pdf2)
+                                                       .ContinueWith(t2 => client.DownloadDataTaskAsync(pdf3)
+                                                                                 .ContinueWith(t3 => MessageBox.Show("Finished"))));
         }
 
         private int state = 0;
