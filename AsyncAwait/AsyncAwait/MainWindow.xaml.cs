@@ -29,7 +29,7 @@ namespace AsyncAwait
 
         private WebClient client = new WebClient();
 
-        private void Download(object sender, RoutedEventArgs e)
+        private async void Download(object sender, RoutedEventArgs e)
         {
             // synchronous download
             //client.DownloadData(pdf1);
@@ -42,10 +42,26 @@ namespace AsyncAwait
             //client.DownloadDataAsync(new Uri(pdf1));
 
             // tasks
-            var task = client.DownloadDataTaskAsync(pdf1)
-                             .ContinueWith(t1 => client.DownloadDataTaskAsync(pdf2)
-                                                       .ContinueWith(t2 => client.DownloadDataTaskAsync(pdf3)
-                                                                                 .ContinueWith(t3 => MessageBox.Show("Finished"))));
+            //var task = client.DownloadDataTaskAsync(pdf1)
+            //                 .ContinueWith(t1 => client.DownloadDataTaskAsync(pdf2)
+            //                                           .ContinueWith(t2 => client.DownloadDataTaskAsync(pdf3)
+            //                                                                     .ContinueWith(t3 => MessageBox.Show("Finished"))));
+
+            // async/await
+            //await client.DownloadDataTaskAsync(pdf1);
+            //await client.DownloadDataTaskAsync(pdf2);
+            //await client.DownloadDataTaskAsync(pdf3);
+            //MessageBox.Show("Finished");
+
+            // parallel
+            // (WebClient is not thread-safe)
+            var t1 = new WebClient().DownloadDataTaskAsync(pdf1);
+            var t2 = new WebClient().DownloadDataTaskAsync(pdf2);
+            var t3 = new WebClient().DownloadDataTaskAsync(pdf3);
+
+            await Task.WhenAll(t1, t2, t3);
+
+            MessageBox.Show("Finished");
         }
 
         private int state = 0;
